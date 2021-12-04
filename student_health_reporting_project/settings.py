@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-1(j7hwj_t+nwvwk&7@cj6!47b+$)vg(c-++s6yks%p!j%-20^6
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'web_app',
 ]
 
 MIDDLEWARE = [
@@ -54,7 +55,7 @@ ROOT_URLCONF = 'student_health_reporting_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ["student_health_reporting_project/templates/"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
