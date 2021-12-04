@@ -24,7 +24,7 @@ def log_in(request):
     return render(request, 'main_page.html', context)
 
 def addNewStudent(email, password):
-    healthRecord = HealthRecord(email = "zhiyulong@email.com")
+    healthRecord = HealthRecord(email = email)
     student = Student(email = email, password = password, healthRecord=healthRecord)
     healthRecord.save()
     student.save()
