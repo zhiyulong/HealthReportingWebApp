@@ -20,19 +20,19 @@ def log_in(request):
     student_pk = 1
     return redirect("main_page", student_pk)
 
-def addNewStudent(email, password):
+def addNewStudent(name, email, nuid, password):
     healthRecord = HealthRecord(email = email)
-    student = Student(email = email, password = password, healthRecord=healthRecord)
+    student = Student(name = name, email = email, nuid = nuid, password = password, healthRecord=healthRecord)
     healthRecord.save()
     student.save()
 
 def sign_up(request):
-    # student = Student(email, password)
-    return render(request, 'log_in.html')
+    # call addNewStudent to create new student
+    return redirect("log_in")
 
 def main_page(request, student_pk):
     context = {
-        'student_pk': 100
+        'student_pk': student_pk
     }
     return render(request, 'main_page.html', context)
 

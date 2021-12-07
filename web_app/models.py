@@ -18,7 +18,9 @@ class RecordedQuestion(models.Model):
     healthRecord = models.ForeignKey(HealthRecord, on_delete=models.DO_NOTHING)
 
 class Student(models.Model):
+    name = models.CharField(max_length=100, null=True, default='no name recorded')
     email = models.CharField(max_length=100)
+    nuid = models.CharField(max_length=20, null=True, default='no nuid recorded')
     password = models.CharField(max_length=100)
     healthRecord = models.OneToOneField(HealthRecord, on_delete=models.CASCADE, primary_key=True,)
   
