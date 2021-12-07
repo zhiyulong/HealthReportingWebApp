@@ -17,11 +17,11 @@ def log_in(request):
     
     # if email exist and password correct
     # update student pk
-    student_pk = 0
+    student_pk = 1
     context = {
         'student_pk': student_pk
     }
-    return render(request, 'main_page.html', context)
+    return redirect("main_page", student_pk)
 
 def addNewStudent(email, password):
     healthRecord = HealthRecord(email = email)
@@ -34,8 +34,10 @@ def sign_up(request):
     return render(request, 'log_in.html')
 
 def main_page(request, student_pk):
-    
-    return render(request, 'main_page.html')
+    context = {
+        'student_pk': 100
+    }
+    return render(request, 'main_page.html', context)
 
 def student_record(request, student_pk):
     context = {
