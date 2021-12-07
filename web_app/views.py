@@ -18,9 +18,6 @@ def log_in(request):
     # if email exist and password correct
     # update student pk
     student_pk = 1
-    context = {
-        'student_pk': student_pk
-    }
     return redirect("main_page", student_pk)
 
 def addNewStudent(email, password):
