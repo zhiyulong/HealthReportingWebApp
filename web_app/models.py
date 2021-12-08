@@ -1,4 +1,5 @@
 from django.db import models
+import datetime
 
 # Create your models here.
 class Question(models.Model):
@@ -14,8 +15,10 @@ class HealthRecord(models.Model):
         return "Health Record for Student: " + self.email
 
 class RecordedQuestion(models.Model):
+    student_pk = models.IntegerField()
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     healthRecord = models.ForeignKey(HealthRecord, on_delete=models.DO_NOTHING)
+    time = models.DateTimeField(null=True)
 
 class Student(models.Model):
     name = models.CharField(max_length=100, null=True, default='no name recorded')
@@ -25,7 +28,8 @@ class Student(models.Model):
     healthRecord = models.OneToOneField(HealthRecord, on_delete=models.CASCADE, primary_key=True,)
   
     def addRecord(self, question):
-        added = RecordedQuestion(question = question, healthRecord = self.healthRecord)
+        time = datetime.datetime.now()
+        added = RecordedQuestion(student_pk = self.pk, question = question, healthRecord = self.healthRecord, time = time)
         added.save()
 
     def __str__(self):
