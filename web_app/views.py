@@ -36,9 +36,29 @@ def edit_account(request, student_pk):
     student = Student.objects.get(pk = student_pk)
     context = {
         'student_pk': student_pk,
-        "name": student.name, 
+        'student': student,
     }
     return render(request, 'edit_account.html', context)
+
+def update_account(request, student_pk):
+    student = Student.objects.get(pk = student_pk)
+
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        nuid = request.POST.get('nuid')
+        password = request.POST.get('password')
+        if name != None and len(name) > 0:
+            student.name = name
+        if email != None and len(email) > 0:
+            student.email = email
+        if nuid != None and len(nuid) > 0:
+            student.nuid = nuid
+        if password != None and len(password) > 0:
+            student.password = password
+        student.save()
+    
+    return redirect('edit_account', student_pk)
 
 def main_page(request, student_pk):
     student = Student.objects.get(pk = student_pk)
