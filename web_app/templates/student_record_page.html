@@ -3,8 +3,104 @@
 
 {% block page_content %}
 
+<html>
+<head>
+<meta charset="utf-8"> 
+    <style type="text/css">
+        body {
+            margin-left: 2%;
+            margin-right: 2%;
+        }
+        h3 {
+            margin: auto;        
+            text-align: center;
+            border: solid gray;
+            margin-bottom: 2%;
+        }
+        .btn {
+            background-color: rgb(230, 235, 232);
+            align-items: flex-end;
+        }
+        .row {
+            border-bottom: 0.5mm solid black;
+            align-content: center;
+        }
+        #field {
+            color: blue;
+            font-weight: bold;
+        }
+        bold {
+            color:red;
+        }
+    </style>
+</head>
+</html>
 
-<h3>student record</h3>
+<body>
+    <a href="{% url 'main_page' student_pk %}"
+                    class="btn">
+        Back
+    </a>
 
+    {% if student_pk == 0 %}
+    <h3>All Students Records</h3>
+    {%else%}
+    <h3>Student Records for {{student.name}}</h3>
+    {%endif%}
+
+    <div class="row">
+        <div id="field" class="col-md-2">
+            Has Symptoms
+        </div>
+        <div id="field" class="col-md-2">
+            Has Close Contact
+        </div>
+        <div id="field" class="col-md-2">
+            Covid Test Result
+        </div>
+        <div id="field" class="col-md-3">
+            Time
+        </div>
+    </div>
+
+    <form action = "{% url 'remove_record' student_pk %}" method = "POST">
+        {% csrf_token %}
+        
+        {% for record in records %}
+        <div class="row">
+            <div class="col-md-2">
+                {% if  record.question.hasSymptoms == True%}
+                    <bold>Yes</bold>
+                {%else%}
+                    No
+                {%endif%}
+            </div>
+            <div class="col-md-2">
+                {% if  record.question.hasCloseContact == True%}
+                    <bold>Yes</bold>
+                {%else%}
+                    No
+                {%endif%}
+            </div>
+            <div class="col-md-2">
+                {% if  record.question.testResult == True%}
+                    <bold>Positive</bold>
+                {%else%}
+                    Negative
+                {%endif%}
+            </div>
+            <div class="col-md-3">
+                {{record.time}}
+            </div>
+            <div class="col-md-1">
+                <input type="hidden" value={{record.pk}} name="rq_pk">
+                <button type="submit"> Delete </button>
+            </div>
+        </div>
+        {% endfor %}
+
+    </form>
+
+</body>
 
 {% endblock %}

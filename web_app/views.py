@@ -3,6 +3,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 from web_app.models import Student, Question, RecordedQuestion, HealthRecord
 
+administrator_pk = 0
+
 def log_in(request):
     # check whether student's email exist
 
@@ -30,25 +32,83 @@ def sign_up(request):
     # call addNewStudent to create new student
     return redirect("log_in")
 
-def main_page(request, student_pk):
+def edit_account(request, student_pk):
+    student = Student.objects.get(pk = student_pk)
     context = {
-        'student_pk': student_pk
+        'student_pk': student_pk,
+        "name": student.name, 
+    }
+    return render(request, 'edit_account.html', context)
+
+def main_page(request, student_pk):
+    student = Student.objects.get(pk = student_pk)
+    context = {
+        'student_pk': student_pk,
+        'name': student.name, 
+        'invalid': 0,
     }
     return render(request, 'main_page.html', context)
 
 def student_record(request, student_pk):
+    student = Student.objects.get(pk = student_pk)
+    
+    if student_pk == administrator_pk:
+        records = RecordedQuestion.objects.all()
+    else:
+        records = RecordedQuestion.objects.filter(student_pk = student_pk)
+    
+    records = reversed(records)
     context = {
-        'student_pk': student_pk
+        'student_pk': student_pk,
+        'records': records,
+        'student': student,
     }
     return render(request, 'student_record_page.html', context)
 
 
-def all_records(request):
-    return render(request, 'all_records_page.html')
+def invalid_input(request, student_pk):
+    student = Student.objects.get(pk = student_pk)
+    context = {
+        'student_pk': student_pk,
+        'name': student.name, 
+        'invalid': 1,
+    }
+    return render(request, 'main_page.html', context)
+
+def add_record(request, student_pk):
+    student = Student.objects.get(pk = student_pk)
+    if request.method == 'POST':
+        symptom = request.POST.get('symptom')
+        closeContact = request.POST.get('closeContact')
+        result = request.POST.get('result')
+        if symptom == None or closeContact == None or result == None:
+            return redirect("invalid_input", student_pk)
+        
+        if symptom == 'True':
+            symptom = True
+        else:
+            symptom = False
+        if closeContact == 'True':
+            closeContact = True
+        else:
+            closeContact = False
+        if result == 'True':
+            result = True
+        else:
+            result = False
+        
+
+        question = Question.objects.filter(hasSymptoms = symptom, hasCloseContact = closeContact, testResult = result)
+        if len(question) > 0:
+            student.addRecord(question[0])
+    return redirect('student_record', student_pk)
 
 
-def add_record(request, student_pk, question_pk):
-    student = Student.objects.get(pk=student_pk)
-    question = Question.objects.get(pk=question_pk)
-    student.addRecord(question)
-    return redirect('student_record_page.html', student_pk)
+def remove_record(request, student_pk):
+    if request.method == 'POST':
+        rq_pk = request.POST.get('rq_pk')
+        if rq_pk != None:
+            record = RecordedQuestion.objects.get(pk = rq_pk)
+            if record != None:
+                record.delete()
+    return redirect('student_record', student_pk)

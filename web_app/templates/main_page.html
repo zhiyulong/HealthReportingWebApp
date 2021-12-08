@@ -3,7 +3,132 @@
 
 {% block page_content %}
 
+<html>
+<head>
+<meta charset="utf-8"> 
+    <style type="text/css">
+        body {
+            margin-left: 2%;
+            margin-right: 2%;
+        }
+        .title {
+            margin-top: 3%;    
+            text-align: center;
+            border: solid gray;
+        }
+        .btn {
+            background-color: rgb(230, 235, 232);
+            align-items: flex-end;
+        }
+        .question {
+            margin-top: 3%;
+            padding-left: 3%;
+            background-color: gray;
+            color: aliceblue;
+            font-size: x-large;
+        }
+        .invalid {
+            color: red;
+        }
+        
+    </style>
+</head>
+</html>
 
-<h3>main page {{student_pk}}</h3>
+<body>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <a href="{% url 'student_record' student_pk %}"
+                    class="btn">
+            Records History
+            </a>
+        </div>
+        <div class="col-md-2 text-right">
+            <a href="{% url 'edit_account' student_pk %}"
+                    class="btn">
+            Edit Account
+            </a>
+        </div>
+        <div class="col-md-1 text-right">
+            <a href="{% url 'log_in' %}"
+                    class="btn">
+            Sign Out
+            </a>
+        </div>
+    </div>
+    
+
+    <h3 class="title">Hi {{name}}! Please do your wellness check bellow.</h3>
+    
+    {% if invalid == 1 %}
+    <p class="invalid">Please answer all questions.</p>
+    {% endif %}
+
+    <form action = "{% url 'add_record' student_pk %}" method = "POST">
+    {% csrf_token %}
+    <p class="question">
+        Are you experiencing any of the following symptoms:
+        <ul>
+            <li>New loss of smell or taste</li>
+            <li>New or worsened muscle aches or body aches or fatigue</li>
+            <li>New or worsened headache</li>
+            <li>Fever, feeling feverish or shaking chills</li>
+            <li>New or worsened cough</li>
+            <li>New or worsened sore throat</li>
+            <li>Diarrhea/vomiting</li>
+            <div class="row">
+                <div class="col-md-1">
+                    <input type="radio" value=True name="symptom">
+                    <label>YES</label>
+                </div>
+                <div class="col-md-4">
+                    <input type="radio" value=False name="symptom">
+                    <label>No</label>
+                </div>
+            </div>
+        </ul>
+    </p>
+
+    <p class="question">
+        Have you had close contact with someone who is diagnosed with COVID-19 in the past 14 days?
+        <ul>
+            <div class="row">
+                <div class="col-md-1">
+                    <input type="radio" value=True name="closeContact">
+                    <label>YES</label>
+                </div>
+                <div class="col-md-4">
+                    <input type="radio" value=False name="closeContact">
+                    <label>No</label>
+                </div>
+            </div>
+        </ul>
+    </p>
+
+    <p class="question">
+        What is your COVID-19 test result for the past 10 days?
+        <ul>
+            <div class="row">
+                <div class="col-md-1">
+                    <input type="radio" value=True name="result">
+                    <label>Positive</label>
+                </div>
+                <div class="col-md-4">
+                    <input type="radio" value=False name="result">
+                    <label>Negative</label>
+                </div>
+            </div>
+        </ul>
+    </p>
+
+    <button type="submit">Submit</button>
+    </form>
+    {% if invalid == 1 %}
+    <p class="invalid">Please answer all questions.</p>
+    {% endif %}
+
+
+</body>
 
 {% endblock %}
