@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page_content %}
+<html>
+<head>
+<meta charset="utf-8"> 
+    <style type="text/css">
+        body {
+            margin-left: 2%;
+            margin-right: 2%;
+        }
+        h3 {
+            margin: auto;        
+            text-align: center;
+            border: solid gray;
+            margin-bottom: 2%;
+        }
+        .btn {
+            font-size: larger;
+            font-weight: bold;
+        }
+        .row {
+            border-bottom: 0.5mm solid black;
+            align-content: center;
+        }
+        #field {
+            color: blue;
+            font-weight: bold;
+        }
+        bold {
+            color:red;
+        }
+        button {
+            font-size: larger;
+            background-color: cornsilk;
+            color: rgb(64, 78, 160);
+            border-color: blue;
+            font-weight: bold;
+        }
+        
+    </style>
+</head>
+</html>
+
+<body>
+    <a href="{% url 'log_in' %}"
+                    class="btn">
+        Back to Student Login
+    </a>
+
+    <h3>All Students and Records</h3>
+
+    <div class="row">
+        <div id="field" class="col-md-2">
+        </div>
+        <div id="field" class="col-md-2">
+            Has Symptoms
+        </div>
+        <div id="field" class="col-md-2">
+            Has Close Contact
+        </div>
+        <div id="field" class="col-md-2">
+            Covid Test Result
+        </div>
+        <div id="field" class="col-md-3">
+            Time
+        </div>
+    </div>
+
+    {% for student, history in records.items %}
+        <form action = "{% url 'edit_account' student.pk %}" method = "POST">
+            {% csrf_token %}
+
+            <div>  
+                <input type="hidden" value="from manager" name="manage">
+                <button type="submit">{{student.name}}</button>               
+            </div>
+            <div>  
+                NUID: {{student.nuid}}              
+            </div>
+
+            {% for record in history %}
+            <div class="row">
+                <div id="field" class="col-md-2">
+                </div>
+                <div class="col-md-2">
+                    {% if  record.question.hasSymptoms == True%}
+                        <bold>Yes</bold>
+                    {%else%}
+                        No
+                    {%endif%}
+                </div>
+                <div class="col-md-2">
+                    {% if  record.question.hasCloseContact == True%}
+                        <bold>Yes</bold>
+                    {%else%}
+                        No
+                    {%endif%}
+                </div>
+                <div class="col-md-2">
+                    {% if  record.question.testResult == True%}
+                        <bold>Positive</bold>
+                    {%else%}
+                        Negative
+                    {%endif%}
+                </div>
+                <div class="col-md-3">
+                    {{record.time}}
+                </div>
+            </div>
+            {% endfor %}
+
+        </form>
+    {% endfor %}
+
+</body>
+
+{% endblock %}
