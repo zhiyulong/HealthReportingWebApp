@@ -1,10 +1,47 @@
 {% extends "base.html" %}
-{% load static %}
 
 {% block page_content %}
+<html>
+<head>
+<meta charset="utf-8"> 
+    <style type="text/css">
+        body {
+            margin-left: 2%;
+            margin-right: 2%;
+        }
+        .title {
+            margin-top: 3%;    
+            text-align: center;
+            border: solid gray;
+        }
+        .btn {
+            background-color: rgb(230, 235, 232);
+            align-items: flex-end;
+        }
+        .hint {
+            font-size: small;
+            color: brown;
+        }
+    </style>
+</head>
+</html>
 
+<h3>Login</h3>
+<hr>
+    <form method="POST">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button type="submit">Login</button>
+    </form>
 
-<h3>log in</h3>
-
-
+{% for message in messages %}
+    <div class="alert alert-success">
+        <a class="close" href="#" data-dismiss="alert">×</a>
+           {{ message }}
+    </div>
+{% endfor %}
+    <p class="hint">
+        Using your email address as the username to login.
+    </p>
+    Don't have an account? <a href="sign_up" target="blank"><strong>Sign up here</strong></a>!
 {% endblock %}

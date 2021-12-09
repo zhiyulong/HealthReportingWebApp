@@ -3,25 +3,41 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 from web_app.models import Student, Question, RecordedQuestion, HealthRecord
 
-administrator_pk = 1
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import login, authenticate
+from django.db import models
+from django.contrib import messages
+from .forms import SignupForm
+
+manager_email = "manager@neu.com"
+# manager's password is 'password1234'
 
 def log_in(request):
-    # check whether student's email exist
+    if request.method == 'POST':
+        form = AuthenticationForm(request.POST)
+        email = request.POST['username']
+        password = request.POST['password']
+        student = authenticate(username=email, password=password)
 
-    # if not, ask to create
-        # return render(request, 'signup_page.html')
+        if student is not None:
+            if student.is_active:
+                login(request, student)
+                student_pk = Student.objects.get(email=email).pk
+                print(student_pk)
+                return redirect('main_page', student_pk)
+        else:
+            messages.error(request,"Username or password is not correct, please try again. If you forgot password, please contact IT department for help.")
+            context = {
+            'form': form
+            }
+            return render(request, 'log_in.html', context)
 
-
-    # if exist, check password
-    # if password not right
-
-    # return render(request, 'log_in.html')
-    
-    # if email exist and password correct
-    # update student pk
-    
-    student_pk = 1
-    return redirect("main_page", student_pk)
+    else:
+        form = AuthenticationForm()
+        context = {
+        'form': form
+        }
+        return render(request, 'log_in.html', context)
 
 def addNewStudent(name, email, nuid, password):
     healthRecord = HealthRecord(email = email)
@@ -30,8 +46,27 @@ def addNewStudent(name, email, nuid, password):
     student.save()
 
 def sign_up(request):
-    # call addNewStudent to create new student
-    return redirect("log_in")
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            student = form.save()
+            student.refresh_from_db()
+            student.save()
+            email = form.cleaned_data.get('username')
+            name = form.cleaned_data.get('name')
+            nuid = form.cleaned_data.get('nuid')
+            password = form.cleaned_data.get('password1')
+            student_pk = models.AutoField(primary_key=True)
+            addNewStudent(name, email, nuid, password)
+            return redirect('log_in')
+    else:
+        form = SignupForm()
+
+    context = { 
+            'form': form,
+    }
+
+    return render(request, 'signup_page.html', context)
 
 def edit_account(request, student_pk):
     student = Student.objects.get(pk = student_pk)
@@ -55,7 +90,9 @@ def update_account(request, student_pk):
     if request.method == 'POST':
         delete = request.POST.get('delete')
         if delete != None and len(delete) > 0:
-            student.delete()
+            records = RecordedQuestion.objects.filter(student_pk=student_pk)
+            for record in records:
+                record.delete()
             return redirect("manage_page")
 
         name = request.POST.get('name')
@@ -63,25 +100,32 @@ def update_account(request, student_pk):
         nuid = request.POST.get('nuid')
         password = request.POST.get('password')
         manage = request.POST.get('manage')
+
+        studentAuth = authenticate(username=student.email, password=student.password)
+
         if name != None and len(name) > 0:
             student.name = name
         if email != None and len(email) > 0:
             student.email = email
+            studentAuth.username = email
         if nuid != None and len(nuid) > 0:
             student.nuid = nuid
         if password != None and len(password) > 0:
             student.password = password
+            studentAuth.set_password(password)
+            
         student.save()
+        studentAuth.save()
 
         if manage:
             return redirect('manage_page')
     return redirect('edit_account', student_pk)
 
 def main_page(request, student_pk):
-    if student_pk == administrator_pk:
+    student = Student.objects.get(pk = student_pk)
+    if student.email == manager_email:
         return redirect("manage_page")
 
-    student = Student.objects.get(pk = student_pk)
     context = {
         'student_pk': student_pk,
         'name': student.name, 
