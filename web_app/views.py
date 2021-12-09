@@ -106,6 +106,9 @@ def update_account(request, student_pk):
         if name != None and len(name) > 0:
             student.name = name
         if email != None and len(email) > 0:
+            healthRecord = HealthRecord.objects.filter(email=student.email)[0]
+            healthRecord.email = email
+            healthRecord.save()
             student.email = email
             studentAuth.username = email
         if nuid != None and len(nuid) > 0:
@@ -116,8 +119,8 @@ def update_account(request, student_pk):
             
         student.save()
         studentAuth.save()
-
-        if manage:
+       
+        if manage == 'True':
             return redirect('manage_page')
     return redirect('edit_account', student_pk)
 

@@ -17,7 +17,7 @@ class HealthRecord(models.Model):
 class RecordedQuestion(models.Model):
     student_pk = models.IntegerField()
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    healthRecord = models.ForeignKey(HealthRecord, on_delete=models.DO_NOTHING)
+    healthRecord = models.ForeignKey(HealthRecord, on_delete=models.DO_NOTHING, null=True)
     time = models.DateTimeField(null=True)
 
 class Student(models.Model):
@@ -25,7 +25,7 @@ class Student(models.Model):
     email = models.CharField(max_length=100)
     nuid = models.CharField(max_length=20, null=True, default='no nuid recorded')
     password = models.CharField(max_length=100)
-    healthRecord = models.OneToOneField(HealthRecord, on_delete=models.CASCADE, primary_key=True,)
+    healthRecord = models.OneToOneField(HealthRecord, on_delete=models.CASCADE, null=True)
   
     def addRecord(self, question):
         time = datetime.datetime.now()
